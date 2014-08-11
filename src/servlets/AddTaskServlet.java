@@ -19,12 +19,15 @@ public class AddTaskServlet extends HttpServlet {
 			throws IOException {
 		
 		String strUserID = UserServiceFactory.getUserService().getCurrentUser().getUserId();
+		
+	    Entity task = new Entity("TaskList", KeyFactory.createKey("user", strUserID));	    
 
-		Entity task = new Entity("TaskList", KeyFactory.createKey("user", strUserID));	    	    	    
-		task.setProperty("dueDate", servletRequest.getParameter("dueDate"));	    
+	    task.setProperty("dueDate", servletRequest.getParameter("dueDate"));
 		task.setProperty("description", servletRequest.getParameter("description"));
+		task.setProperty("isComplete", false);
 	    
-		DatastoreServiceFactory.getDatastoreService().put(task);
-		servletResponse.sendRedirect("/taskList.jsp");
+	    DatastoreServiceFactory.getDatastoreService().put(task);
+
+	    servletResponse.sendRedirect("/taskList.jsp");
 	}
 }

@@ -64,36 +64,39 @@
 					$( "#dueDate" ).datepicker();
 				});
 
-				var tasks = new Array();
-						
+				var row, checkBox;
+				var table = document.getElementById("taskList");
+
 				<%
 					Query query = new Query("TaskList", KeyFactory.createKey("user", user.getUserId()));			
 					List<Entity> taskList = DatastoreServiceFactory.getDatastoreService().prepare(query).asList(FetchOptions.Builder.withDefaults());
 					if (!taskList.isEmpty()) {
 						for (Entity task : taskList) {
-				%>
-							tasks.push("<%= task.getProperty("description") %> : <%= task.getProperty("dueDate") %>");										
-				<%
-							
-						}
-					}
-				%>
+				%>				
+							checkBox = document.createElement('input');
+							checkBox.type = "checkbox";
 
-				var row, checkBox;
-				var table = document.getElementById("taskList");
-		
-				for(var i = 0; i < tasks.length; i++) {
-					checkBox = document.createElement('input');
-					checkBox.type = "checkbox";
+							checkBox.onclick = function() {
+								jQuery.ajax({
+									url: "./servlets/UpdateTask",
+									type: 'POST',
+									data: { 
+										isComplete: (this.checked ? "true" : "false"),
+										description: '<%= task.getProperty("description") %>'
+									}
+								});
+							}
+							
+							row = table.insertRow(-1); // insert at last position
 					
-					row = table.insertRow(-1); // insert at last position
-		
-					row.insertCell(0).appendChild(checkBox);
-					row.insertCell(1).appendChild(document.createTextNode(tasks[i]));
+							row.insertCell(0).appendChild(checkBox);
+							row.insertCell(1).appendChild(document.createTextNode("<%= task.getProperty("description") %> <%= task.getProperty("dueDate") %>"));
+				<%
+						}
+							
+					}
 				}
-			</script>						
-		<%
-		}
-		%>
+				%>
+		</script>						
 	</body>
 </html>
