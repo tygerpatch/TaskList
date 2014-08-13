@@ -4,4 +4,3 @@
 .gradle/
 bin/
 gradle-app.setting
-build.gradle
