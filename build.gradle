@@ -4,11 +4,12 @@ apply plugin: 'eclipse-wtp'
 
 sourceCompatibility = 1.7
 
+/*
 repositories {
    mavenLocal()
    mavenCentral()
 }
 
 dependencies {
-   compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.9'
 }
+*/
