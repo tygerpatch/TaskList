@@ -1,16 +1,16 @@
 1. Run Gradle's eclipse task
 2. Import project into Eclipse
-3. Tell Google App Engine that project has a WAR directory
-  * Right click on project
-  * Select Properties > Google > Web Application
-  * Put a check mark on "This project has a WAR directory"
-  * Put a check mark on "Launch and deploy from this directory"
-  * Click OK
-4. Use Google App Engine
+3. Use Google App Engine
   * Right click on project
   * Select Properties > Google > App Engine
-  * Put a check mark on "Use Google App Engine"
-  * Configure Datastore
+    * Put a check mark on "Use Google App Engine"
+  * Select Google > Web Application
+    * Put a check mark on "This project has a WAR directory"
+    * Put a check mark on "Launch and deploy from this directory"
+  * Click OK
+4. Configure Datastore
+  * Right click on project
+  * Select Properties > Google > App Engine
     * Select "Enable local HRD support"
     * Select v2 for "Datanucleus JDO/JPA version"
   * Click OK
