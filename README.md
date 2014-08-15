@@ -17,5 +17,6 @@
 5. Configure Build Path
   * Right click on project
   * Select Build Path > Configure Build Path
+  * Select the "Order and Export" tab
   * Put a check mark on "App Engine SDK [App Engine - 1.9.9]"
   * Move "App Engine SDK [App Engine - 1.9.9]" above "Web App Libraries"
