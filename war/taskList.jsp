@@ -2,14 +2,14 @@
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
+<%@ page import="com.google.appengine.api.datastore.Query" %>
+<%@ page import="com.google.appengine.api.datastore.Query.Filter" %>
+<%@ page import="com.google.appengine.api.datastore.Query.FilterOperator" %>
+<%@ page import="com.google.appengine.api.datastore.Query.FilterPredicate" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
-<%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
-<%@ page import="com.google.appengine.api.datastore.Key" %>
-<%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
-<%@ page import="com.google.appengine.api.datastore.Query" %>
-<%@ page import="java.util.List" %>
+<%@ page import="com.google.appengine.api.datastore.PreparedQuery" %>
 
 <html>
 	<head>
@@ -67,36 +67,44 @@
 				var row, checkBox;
 				var table = document.getElementById("taskList");
 
-				<%
-					Query query = new Query("TaskList", KeyFactory.createKey("user", user.getUserId()));			
-					List<Entity> taskList = DatastoreServiceFactory.getDatastoreService().prepare(query).asList(FetchOptions.Builder.withDefaults());
-					if (!taskList.isEmpty()) {
-						for (Entity task : taskList) {
-				%>				
-							checkBox = document.createElement('input');
-							checkBox.type = "checkbox";
-
-							checkBox.onclick = function() {
-								jQuery.ajax({
-									url: "./servlets/UpdateTask",
-									type: 'POST',
-									data: { 
-										isComplete: (this.checked ? "true" : "false"),
-										description: '<%= task.getProperty("description") %>'
-									}
-								});
-							}
-							
-							row = table.insertRow(-1); // insert at last position
-					
-							row.insertCell(0).appendChild(checkBox);
-							row.insertCell(1).appendChild(document.createTextNode("<%= task.getProperty("description") %> <%= task.getProperty("dueDate") %>"));
-				<%
+				<%				
+					String propertyName = "userID";
+					FilterOperator operator = FilterOperator.EQUAL;
+					String value = user.getUserId();	
+					Filter filter = new FilterPredicate(propertyName, operator, value);
+		
+					Query query = new Query("Task");
+					query.setFilter(filter);
+		
+					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+					PreparedQuery preparedQuery = datastore.prepare(query);
+		
+					for (Entity entity : preparedQuery.asIterable()) {
+				%>
+						checkBox = document.createElement('input');
+						checkBox.type = "checkbox";
+						checkBox.checked = <%= entity.getProperty("isComplete") %>;				
+		
+						checkBox.onclick = function() {
+							jQuery.ajax({
+								url: "./servlets/UpdateTask",
+								type: 'POST',
+								data: { 
+									isComplete: (this.checked ? "true" : "false"),
+									description: "<%= entity.getProperty("description") %>"
+								}
+							});
 						}
-							
+					
+						row = table.insertRow(-1); // insert at last position
+				
+						row.insertCell(0).appendChild(checkBox);
+						row.insertCell(1).appendChild(document.createTextNode("<%= entity.getProperty("description") %> <%= entity.getProperty("dueDate") %>"));
+				<%
 					}
 				}
 				%>
+
 		</script>						
 	</body>
 </html>
