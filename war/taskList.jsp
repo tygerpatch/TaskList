@@ -10,7 +10,9 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
 <%@ page import="com.google.appengine.api.datastore.PreparedQuery" %>
-
+<%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
+<%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
+<%@ page import="com.google.appengine.api.datastore.Key" %>
 <html>
 	<head>
 		<title>Task List</title>
@@ -54,11 +56,9 @@
 					</tr>				
 	  			</table>
 			</form>
-			
 			<div style = "height: 100px; width: 300px; border: 1px solid; overflow: auto">
 				<table id = "taskList"></table>
 			</div>
-			
 			<script type="text/javascript">
 				$(function() {
 					$( "#dueDate" ).datepicker();
@@ -66,19 +66,23 @@
 
 				var row, checkBox;
 				var table = document.getElementById("taskList");
-
+				
 				<%				
 					String propertyName = "userID";
 					FilterOperator operator = FilterOperator.EQUAL;
 					String value = user.getUserId();	
 					Filter filter = new FilterPredicate(propertyName, operator, value);
 		
-					Query query = new Query("Task");
+					String kind = "Task";
+					String name = user.getUserId();
+					Key key = KeyFactory.createKey(kind, name);
+
+					Query query = new Query("Task", key);
 					query.setFilter(filter);
 		
 					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-					PreparedQuery preparedQuery = datastore.prepare(query);
-		
+					PreparedQuery preparedQuery = datastore.prepare(query);	
+
 					for (Entity entity : preparedQuery.asIterable()) {
 				%>
 						checkBox = document.createElement('input');
@@ -95,16 +99,18 @@
 								}
 							});
 						}
-					
-						row = table.insertRow(-1); // insert at last position
 				
+						row = table.insertRow(-1); // insert at last position
+			
 						row.insertCell(0).appendChild(checkBox);
 						row.insertCell(1).appendChild(document.createTextNode("<%= entity.getProperty("description") %> <%= entity.getProperty("dueDate") %>"));
 				<%
 					}
-				}
 				%>
-
-		</script>						
+			</script>	
+		<%
+			}
+		%>
+								
 	</body>
 </html>
