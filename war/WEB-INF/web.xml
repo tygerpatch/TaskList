@@ -12,16 +12,6 @@
 		<servlet-class>servlets.AddTaskServlet</servlet-class>
 	</servlet>
 
-	<servlet>
-		<servlet-name>UpdateTask</servlet-name>
-		<servlet-class>servlets.UpdateTaskServlet</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>UpdateTask</servlet-name>
-		<url-pattern>/servlets/UpdateTask</url-pattern>
-	</servlet-mapping>
-	
 	<servlet-mapping>
 		<servlet-name>AddTask</servlet-name>
 		<url-pattern>/servlets/AddTask</url-pattern>

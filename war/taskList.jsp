@@ -41,24 +41,6 @@
 			<p>
 				<a href="<%=userService.createLogoutURL(request.getRequestURI())%>">sign out</a>
 			</p>
-			<form action="/servlets/AddTask" method = "POST" onsubmit="return validateForm()" name="myForm">
-				<table>
-	  				<tr>
-	  					<td><label for="description">Description</label></td>
-	  					<td><label for="dueDate">Date Due</label></td>
-	  					<td></td>
-					</tr>
-		
-	  				<tr>
-	  					<td><input type="text" name="description" /></td>
-	  					<td><input type="text" name="dueDate" id="dueDate" /></td>
-	  					<td><input type="submit" value="Add" /></td> 
-					</tr>				
-	  			</table>
-			</form>
-			<div style = "height: 100px; width: 300px; border: 1px solid; overflow: auto">
-				<table id = "taskList"></table>
-			</div>
 			<script type="text/javascript">
 				function validateForm() {
 					var form = document.forms["myForm"];
@@ -79,10 +61,25 @@
 				$(function() {
 					$( "#dueDate" ).datepicker();
 				});
+			</script>			
+			<form action="/servlets/AddTask" method = "POST" onsubmit="return validateForm()" name="myForm">
+				<table>
+					<tr>
+						<td><label for="description">Description</label></td>
+						<td><input type="text" name="description" /></td>
+					</tr>
+					<tr>
+						<td><label for="dueDate">Date Due</label></td>
+						<td><input type="text" name="dueDate" id="dueDate" /></td>
+					</tr>
+				</table>
+				<label for="isComplete">Mark task as complete?</label>
+				<input type="checkbox" name="isComplete" />
+				<br />
 
-				var row, checkBox;
-				var table = document.getElementById("taskList");
-				
+	  			<input type="submit" value="Add" />
+			</form>
+			<div style = "height: 100px; width: 300px; border: 1px solid; overflow: auto" id="taskList">
 				<%				
 					String propertyName = "userID";
 					FilterOperator operator = FilterOperator.EQUAL;
@@ -100,33 +97,25 @@
 					PreparedQuery preparedQuery = datastore.prepare(query);	
 
 					for (Entity entity : preparedQuery.asIterable()) {
+						if((Boolean)entity.getProperty("isComplete")) {
 				%>
-						checkBox = document.createElement('input');
-						checkBox.type = "checkbox";
-						checkBox.checked = <%= entity.getProperty("isComplete") %>;				
-		
-						checkBox.onclick = function() {
-							jQuery.ajax({
-								url: "./servlets/UpdateTask",
-								type: 'POST',
-								data: { 
-									isComplete: (this.checked ? "true" : "false"),
-									description: "<%= entity.getProperty("description") %>"
-								}
-							});
+							<div style="text-decoration: line-through;">
+				<%
 						}
-				
-						row = table.insertRow(-1); // insert at last position
-			
-						row.insertCell(0).appendChild(checkBox);
-						row.insertCell(1).appendChild(document.createTextNode("<%= entity.getProperty("description") %> <%= entity.getProperty("dueDate") %>"));
+						else  {
+				%>
+							<div>
+				<%
+						}
+				%>
+							<%= entity.getProperty("description") %> <%= entity.getProperty("dueDate") %>
+						</div>					
 				<%
 					}
 				%>
-			</script>	
-		<%
+				</div>
+				<%
 			}
-		%>
-								
+				%>			
 	</body>
 </html>
