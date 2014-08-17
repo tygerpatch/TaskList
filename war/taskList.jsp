@@ -41,7 +41,7 @@
 			<p>
 				<a href="<%=userService.createLogoutURL(request.getRequestURI())%>">sign out</a>
 			</p>
-			<form action="/servlets/AddTask" method = "POST">
+			<form action="/servlets/AddTask" method = "POST" onsubmit="return validateForm()" name="myForm">
 				<table>
 	  				<tr>
 	  					<td><label for="description">Description</label></td>
@@ -60,6 +60,22 @@
 				<table id = "taskList"></table>
 			</div>
 			<script type="text/javascript">
+				function validateForm() {
+					var form = document.forms["myForm"];
+				    var description = form["description"].value;
+				    var dueDate = form["dueDate"].value;
+
+				    if (description == null || description == "") {
+				        alert("Task must have a description.");
+				        return false;
+				    }
+
+				    if (dueDate == null || dueDate == "") {
+				        alert("Task must have a due date");
+				        return false;
+				    }				    
+				}
+							
 				$(function() {
 					$( "#dueDate" ).datepicker();
 				});

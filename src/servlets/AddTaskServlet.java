@@ -29,6 +29,17 @@ public class AddTaskServlet extends HttpServlet {
 	public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
 			throws IOException {
 		
+		String dueDate = servletRequest.getParameter("dueDate");
+		String description = servletRequest.getParameter("description");
+		
+		if(dueDate == null || dueDate.isEmpty()) {
+			return;
+		}
+
+		if(description == null || description.isEmpty()) {
+			return;
+		}
+		
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		
@@ -39,8 +50,8 @@ public class AddTaskServlet extends HttpServlet {
 		Entity entity = new Entity("Task", key);
 				
 		entity.setProperty("userID", UserServiceFactory.getUserService().getCurrentUser().getUserId());
-	    entity.setProperty("dueDate", servletRequest.getParameter("dueDate"));
-		entity.setProperty("description", servletRequest.getParameter("description"));
+	    entity.setProperty("dueDate", dueDate);
+		entity.setProperty("description", description);
 		entity.setProperty("isComplete", false);
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
