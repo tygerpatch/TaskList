@@ -6,62 +6,45 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 @SuppressWarnings("serial")
 public class AddTaskServlet extends HttpServlet {
 
 	@Override
-	public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-			throws IOException {
+	public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException {
+
+		String userID = UserServiceFactory.getUserService().getCurrentUser().getUserId();
+		Entity entity = new Entity("Task", KeyFactory.createKey("Task", userID));
+		entity.setProperty("userID", userID);
 		
 		String dueDate = servletRequest.getParameter("dueDate");
-		String description = servletRequest.getParameter("description");
 		
 		if(dueDate == null || dueDate.isEmpty()) {
 			return;
 		}
+		
+		entity.setProperty("dueDate", dueDate);
+		
+		String description = servletRequest.getParameter("description");
 
 		if(description == null || description.isEmpty()) {
 			return;
 		}
-
-		UserService userService = UserServiceFactory.getUserService();
-		User user = userService.getCurrentUser();
-		String kind = "Task";
-		String name = user.getUserId();
-		Key key = KeyFactory.createKey(kind, name);
-		Entity entity = new Entity("Task", key);
 		
-		entity.setProperty("userID", UserServiceFactory.getUserService().getCurrentUser().getUserId());
-	    entity.setProperty("dueDate", dueDate);
 		entity.setProperty("description", description);
 		
-		String isComplete = servletRequest.getParameter("isComplete");
-		
-		if(isComplete == null) {
-			entity.setProperty("isComplete", false);
-		}
-		else if(isComplete.equalsIgnoreCase("on")) {
+		String strIsComplete = servletRequest.getParameter("isComplete");
+		entity.setProperty("isComplete", false);
+
+		if ((strIsComplete != null) && (strIsComplete.equalsIgnoreCase("on"))) {
 			entity.setProperty("isComplete", true);
 		}
-		else {
-			entity.setProperty("isComplete", false);
-		}
-						
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction transaction = datastore.beginTransaction();
-		datastore.put(entity);
-		transaction.commit();
-		
+
+		DatastoreServiceFactory.getDatastoreService().put(entity);
 		servletResponse.sendRedirect("/taskList.jsp");
 	}
 }
