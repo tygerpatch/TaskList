@@ -6,6 +6,10 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
+
+<%@ page import="com.google.appengine.api.users.User" %>
+<%@ page import="com.google.appengine.api.users.UserService" %>
+<%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <html>
 	<head>
 		<title>Task List</title>
@@ -17,7 +21,11 @@
 		<script src="/javascript/jquery-ui.js"></script>		
 	</head>
 	<body>
-		<a href="<%= request.getAttribute("link") %>">Sign Out</a>
+		<%
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+		%>	
+		<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Sign Out</a>
 		<script type="text/javascript">
 			function validateForm() {
 				var form = document.forms["myForm"];
@@ -57,11 +65,10 @@
   			<input type="submit" value="Add" />
 		</form>
 		<div style = "height: 100px; width: 300px; border: 1px solid; overflow: auto" id="taskList">
-			<%
-				String userID = (String)request.getAttribute("userID");			
-				Filter filter = new FilterPredicate("userID", FilterOperator.EQUAL, userID);
+			<%				
+				Filter filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
 
-				Query query = new Query("Task", KeyFactory.createKey("Task", userID));
+				Query query = new Query("Task", KeyFactory.createKey("Task", user.getUserId()));
 				query.setFilter(filter);
 	
 				PreparedQuery preparedQuery = DatastoreServiceFactory.getDatastoreService().prepare(query);	
