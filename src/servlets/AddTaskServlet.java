@@ -17,7 +17,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
- @SuppressWarnings("serial")
+@SuppressWarnings("serial")
 public class AddTaskServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
