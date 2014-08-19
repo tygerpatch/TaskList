@@ -1,0 +1,26 @@
+<!DOCTYPE validators PUBLIC
+   "-//Apache Struts//XWork Validator 1.0.3//EN"
+   "http://struts.apache.org/dtds/xwork-validator-1.0.3.dtd">
+
+<validators>	
+	<field name="description">
+		<field-validator type="required">
+			<message>Task needs a description</message>
+		</field-validator>
+	</field>
+
+	<field name="dueDate">
+		<field-validator type="required">
+			<message>Task needs a due date</message>
+		</field-validator>
+	</field>
+
+	<field name="dueDate">
+		<field-validator type="regex">
+			<param name="expression">
+                <![CDATA[\d\d/\d\d/\d\d\d\d]]>
+			</param>
+			<message>Invalid due date.  Please change to the format MM/dd/yyyy.</message>
+		</field-validator>
+	</field>
+</validators>
